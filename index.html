@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navin Sharma — Backend · DevOps · Infrastructure</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #888;
+            --accent-cyan: #00d4ff;
+            --accent-green: #00ff9d;
+            --accent-amber: #ffb74d;
+            --border-color: #333;
+            --grid-color: rgba(255, 255, 255, 0.03);
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--accent-green);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-cyan);
+        }
+
+        .nav-link.active {
+            color: var(--accent-green);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--accent-green);
+        }
+
+        /* Terminal Animation */
+        .terminal-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .terminal {
+            width: 100%;
+            max-width: 900px;
+            border: 1px solid var(--border-color);
+            background: rgba(17, 17, 17, 0.95);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .terminal-header {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27ca3f; }
+
+        .terminal-title {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-left: 1rem;
+        }
+
+        .terminal-body {
+            padding: 2rem;
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .terminal-line {
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.5s forwards;
+        }
+
+        .terminal-line:nth-child(1) { animation-delay: 0.5s; }
+        .terminal-line:nth-child(2) { animation-delay: 1s; }
+        .terminal-line:nth-child(3) { animation-delay: 1.5s; }
+        .terminal-line:nth-child(4) { animation-delay: 2s; }
+        .terminal-line:nth-child(5) { animation-delay: 2.5s; }
+        .terminal-line:nth-child(6) { animation-delay: 3s; }
+        .terminal-line:nth-child(7) { animation-delay: 3.5s; }
+        .terminal-line:nth-child(8) { animation-delay: 4s; }
+
+        .prompt {
+            color: var(--accent-green);
+        }
+
+        .command {
+            color: var(--accent-cyan);
+        }
+
+        .output {
+            color: var(--text-primary);
+        }
+
+        .comment {
+            color: var(--text-secondary);
+        }
+
+        .highlight {
+            color: var(--accent-amber);
+            font-weight: 500;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.2em;
+            background-color: var(--accent-green);
+            margin-left: 4px;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .footer-link {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        .footer-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .terminal-body {
+                padding: 1.5rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <a href="index.html" class="nav-logo">MyFaduGame</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link active">HOME</a>
+            <a href="work.html" class="nav-link">WORK</a>
+            <a href="systems.html" class="nav-link">SYSTEMS</a>
+            <a href="about.html" class="nav-link">PHILOSOPHY</a>
+            <a href="contact.html" class="nav-link">CONTACT</a>
+        </div>
+    </nav>
+
+    <!-- Terminal Animation -->
+    <main class="terminal-container">
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="terminal-dots">
+                    <div class="terminal-dot dot-red"></div>
+                    <div class="terminal-dot dot-yellow"></div>
+                    <div class="terminal-dot dot-green"></div>
+                </div>
+                <div class="terminal-title">~/systems_engineer — -zsh</div>
+            </div>
+            <div class="terminal-body">
+                <div class="terminal-line">
+                    <span class="prompt">$</span> <span class="command">whoami</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">Senior Backend Engineer · DevOps · System Architect</span>
+                </div>
+                
+                <div class="terminal-line">
+                    <span class="prompt">$</span> <span class="command">cat philosophy.txt</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">I design systems that <span class="highlight">survive scale</span>.</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">Infrastructure that <span class="highlight">doesn't break</span>.</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">Code that <span class="highlight">handles reality</span>.</span>
+                </div>
+                
+                <div class="terminal-line">
+                    <span class="prompt">$</span> <span class="command">system_status --check</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">Backend · Infrastructure · Reliability · Performance</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output comment"># 8+ years production experience | 99.99% uptime mindset</span>
+                </div>
+                
+                <div class="terminal-line">
+                    <span class="prompt">$</span> <span class="command"><span class="cursor"></span></span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div>Systems engineered for production · No buzzwords · Just reliability</div>
+        <div class="footer-links">
+            <a href="work.html" class="footer-link">View Case Studies →</a>
+            <a href="systems.html" class="footer-link">Explore Architecture →</a>
+        </div>
+    </footer>
+
+    <script>
+        // Terminal typing effect
+        document.addEventListener('DOMContentLoaded', function() {
+            const cursor = document.querySelector('.cursor');
+            const commands = [
+                'system_diagnostics --full',
+                'deploy_infrastructure --prod',
+                'monitor_systems --live',
+                'contact --serious-inquiries-only'
+            ];
+            
+            let currentCommand = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            let isPaused = false;
+            
+            function typeCommand() {
+                if (isPaused) return;
+                
+                const currentText = commands[currentCommand];
+                const commandElement = cursor.parentElement;
+                
+                if (!isDeleting && charIndex <= currentText.length) {
+                    commandElement.innerHTML = currentText.substring(0, charIndex) + '<span class="cursor"></span>';
+                    charIndex++;
+                    setTimeout(typeCommand, 50);
+                } else if (isDeleting && charIndex >= 0) {
+                    commandElement.innerHTML = currentText.substring(0, charIndex) + '<span class="cursor"></span>';
+                    charIndex--;
+                    setTimeout(typeCommand, 30);
+                } else {
+                    isDeleting = !isDeleting;
+                    
+                    if (!isDeleting) {
+                        currentCommand = (currentCommand + 1) % commands.length;
+                    }
+                    
+                    // Pause before starting next command
+                    isPaused = true;
+                    setTimeout(() => {
+                        isPaused = false;
+                        typeCommand();
+                    }, 1500);
+                }
+            }
+            
+            // Start typing effect after initial animation
+            setTimeout(typeCommand, 4500);
+            
+            // Navigation active state
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                const linkPage = link.getAttribute('href');
+                if (linkPage === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

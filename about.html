@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENGINEER'S PHILOSOPHY — Reliability · Performance · Systems Thinking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #888;
+            --accent-cyan: #00d4ff;
+            --accent-green: #00ff9d;
+            --accent-amber: #ffb74d;
+            --border-color: #333;
+            --grid-color: rgba(255, 255, 255, 0.03);
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--accent-green);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-cyan);
+        }
+
+        .nav-link.active {
+            color: var(--accent-green);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--accent-green);
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 1000px;
+            margin: 120px auto 60px;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 4rem;
+            text-align: center;
+        }
+
+        .page-title {
+            font-family: var(--font-mono);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Philosophy Sections */
+        .philosophy-sections {
+            display: grid;
+            gap: 3rem;
+        }
+
+        .philosophy-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 3rem;
+            transition: border-color 0.3s, transform 0.3s;
+            position: relative;
+        }
+
+        .philosophy-section:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-4px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+
+        .section-number {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--accent-green);
+            background: rgba(0, 255, 157, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin-right: 1.5rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .section-title {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .section-content {
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        .section-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-content strong {
+            color: var(--accent-cyan);
+            font-weight: 500;
+        }
+
+        /* Principles Grid */
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .principle-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .principle-card:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-4px);
+        }
+
+        .principle-icon {
+            font-family: var(--font-mono);
+            font-size: 2rem;
+            color: var(--accent-green);
+            margin-bottom: 1rem;
+        }
+
+        .principle-title {
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .principle-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            margin: 4rem 0;
+            padding: 3rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .tech-title {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            color: var(--accent-green);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .tech-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .tech-category {
+            margin-bottom: 1.5rem;
+        }
+
+        .category-title {
+            font-family: var(--font-mono);
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .tech-list {
+            list-style: none;
+        }
+
+        .tech-item {
+            color: var(--text-primary);
+            padding: 0.3rem 0;
+            font-size: 0.9rem;
+            position: relative;
+            padding-left: 1.2rem;
+        }
+
+        .tech-item::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+            font-size: 0.8rem;
+        }
+
+        /* Quote */
+        .quote-section {
+            margin: 4rem 0;
+            padding: 3rem;
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--accent-green);
+            border-radius: 4px;
+        }
+
+        .quote-text {
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .quote-author {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-align: right;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .footer-link {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        .footer-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .main-container {
+                margin-top: 140px;
+                padding: 0 1rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .philosophy-section {
+                padding: 2rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .section-number {
+                margin-right: 0;
+            }
+            
+            .principles-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tech-categories {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <a href="index.html" class="nav-logo">SYSTEMS_ENGINEER</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">HOME</a>
+            <a href="work.html" class="nav-link">WORK</a>
+            <a href="systems.html" class="nav-link">SYSTEMS</a>
+            <a href="about.html" class="nav-link active">PHILOSOPHY</a>
+            <a href="contact.html" class="nav-link">CONTACT</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <header class="page-header">
+            <h1 class="page-title">ENGINEER'S PHILOSOPHY</h1>
+            <p class="page-subtitle">No motivational fluff. Just principles that build systems that survive production.</p>
+        </header>
+
+        <!-- Quote -->
+        <div class="quote-section">
+            <p class="quote-text">
+                "The measure of a system is not how it performs under ideal conditions, 
+                but how it fails and recovers when everything goes wrong."
+            </p>
+            <div class="quote-author">— Production Engineering Principle #1</div>
+        </div>
+
+        <!-- Philosophy Sections -->
+        <div class="philosophy-sections">
+            <section class="philosophy-section">
+                <div class="section-header">
+                    <div class="section-number">01</div>
+                    <div>
+                        <h2 class="section-title">OWNERSHIP, NOT JUST IMPLEMENTATION</h2>
+                        <p class="section-subtitle">From architecture to post-mortem</p>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <p>
+                        I don't just write code. I <strong>own systems</strong>. This means being accountable 
+                        for everything from initial architecture decisions to monitoring in production, 
+                        performance during peak load, and conducting thorough post-mortems when things fail.
+                    </p>
+                    <p>
+                        Ownership means understanding that every line of code has operational consequences. 
+                        It means designing with failure in mind, building observability from day one, 
+                        and being the one paged when the system alerts at 3 AM.
+                    </p>
+                    <p>
+                        In 8+ years of production systems, I've learned that <strong>reliability is earned</strong> 
+                        through ownership, not delegated through responsibility matrices.
+                    </p>
+                </div>
+            </section>
+
+            <section class="philosophy-section">
+                <div class="section-header">
+                    <div class="section-number">02</div>
+                    <div>
+                        <h2 class="section-title">RELIABILITY OVER NOVELTY</h2>
+                        <p class="section-subtitle">Boring technology is production technology</p>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <p>
+                        The latest framework might be exciting, but PostgreSQL has handled transactions 
+                        for decades. Kubernetes might be complex, but it orchestrates containers predictably 
+                        at scale. I choose <strong>proven over trendy</strong> for critical systems.
+                    </p>
+                    <p>
+                        This doesn't mean stagnation. It means carefully evaluating new technologies against 
+                        production requirements: community support, battle-testing at scale, operational 
+                        complexity, and failure modes we understand.
+                    </p>
+                    <p>
+                        The most innovative system is useless if it fails under load. The most elegant 
+                        architecture is worthless if no one can operate it at 3 AM during an incident.
+                    </p>
+                </div>
+            </section>
+
+            <section class="philosophy-section">
+                <div class="section-header">
+                    <div class="section-number">03</div>
+                    <div>
+                        <h2 class="section-title">PERFORMANCE AS A FEATURE</h2>
+                        <p class="section-subtitle">Latency is user experience</p>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <p>
+                        Performance isn't an optimization phase—it's a first-class requirement from day one. 
+                        Every architectural decision is evaluated against its performance implications: 
+                        latency budgets, throughput requirements, resource efficiency.
+                    </p>
+                    <p>
+                        I build with <strong>observability baked in</strong>: metrics for every critical path, 
+                        tracing for distributed requests, logging that actually helps debugging. Performance 
+                        regressions are caught in CI, not reported by users.
+                    </p>
+                    <p>
+                        Fast systems aren't just technically superior—they're more reliable, more scalable, 
+                        and cheaper to operate. Performance engineering is cost engineering.
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Engineering Principles -->
+        <div class="principles-grid">
+            <div class="principle-card">
+                <div class="principle-icon">🛡️</div>
+                <h3 class="principle-title">DEFENSE IN DEPTH</h3>
+                <p class="principle-description">
+                    Multiple layers of validation, authentication, and authorization. 
+                    Assume every component will fail and design accordingly.
+                </p>
+            </div>
+            
+            <div class="principle-card">
+                <div class="principle-icon">📊</div>
+                <h3 class="principle-title">OBSERVABILITY FIRST</h3>
+                <p class="principle-description">
+                    If you can't measure it, you can't improve it. If you can't monitor it, 
+                    you shouldn't deploy it. Metrics, logs, traces from day one.
+                </p>
+            </div>
+            
+            <div class="principle-card">
+                <div class="principle-icon">⚡</div>
+                <h3 class="principle-title">FAIL FAST, RECOVER FASTER</h3>
+                <p class="principle-description">
+                    Systems should fail gracefully and recover automatically. 
+                    Mean time to recovery matters more than mean time between failures.
+                </p>
+            </div>
+            
+            <div class="principle-card">
+                <div class="principle-icon">🔧</div>
+                <h3 class="principle-title">AUTOMATION OVER MANUAL</h3>
+                <p class="principle-description">
+                    If you do it twice, automate it. If it can fail, add validation. 
+                    If it's important, add monitoring. Manual processes are failure points.
+                </p>
+            </div>
+        </div>
+
+        <!-- Tech Stack -->
+        <div class="tech-stack">
+            <h2 class="tech-title">TECHNICAL FOUNDATION</h2>
+            <div class="tech-categories">
+                <div class="tech-category">
+                    <h3 class="category-title">PROGRAMMING LANGUAGES</h3>
+                    <ul class="tech-list">
+                        <li class="tech-item">Python</li>
+                        <li class="tech-item">Go</li>
+                        <li class="tech-item">Java</li>
+                        <li class="tech-item">C/C++</li>
+                        <li class="tech-item">Dart/Flutter</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h3 class="category-title">DATABASES</h3>
+                    <ul class="tech-list">
+                        <li class="tech-item">PostgreSQL</li>
+                        <li class="tech-item">MySQL</li>
+                        <li class="tech-item">MongoDB</li>
+                        <li class="tech-item">Cassandra</li>
+                        <li class="tech-item">Redis</li>
+                        <li class="tech-item">CockroachDB</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h3 class="category-title">CLOUD & DEVOPS</h3>
+                    <ul class="tech-list">
+                        <li class="tech-item">AWS</li>
+                        <li class="tech-item">GCP</li>
+                        <li class="tech-item">Azure</li>
+                        <li class="tech-item">Kubernetes</li>
+                        <li class="tech-item">Docker</li>
+                        <li class="tech-item">Terraform</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h3 class="category-title">AI & ML</h3>
+                    <ul class="tech-list">
+                        <li class="tech-item">Model Training</li>
+                        <li class="tech-item">Computer Vision</li>
+                        <li class="tech-item">NLP</li>
+                        <li class="tech-item">HuggingFace</li>
+                        <li class="tech-item">TensorFlow</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h3 class="category-title">MONITORING</h3>
+                    <ul class="tech-list">
+                        <li class="tech-item">Prometheus</li>
+                        <li class="tech-item">Grafana</li>
+                        <li class="tech-item">ELK Stack</li>
+                        <li class="tech-item">Datadog</li>
+                        <li class="tech-item">New Relic</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h3 class="category-title">FRAMEWORKS</h3>
+                    <ul class="tech-list">
+                        <li class="tech-item">Django/FastAPI</li>
+                        <li class="tech-item">Node.js</li>
+                        <li class="tech-item">React</li>
+                        <li class="tech-item">Flutter</li>
+                        <li class="tech-item">Gin</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Philosophy -->
+        <section class="philosophy-section">
+            <div class="section-header">
+                <div class="section-number">04</div>
+                <div>
+                    <h2 class="section-title">LONG-TERM THINKING</h2>
+                    <p class="section-subtitle">Systems that survive engineers</p>
+                </div>
+            </div>
+            <div class="section-content">
+                <p>
+                    I build systems that outlast my involvement. This means <strong>clean architecture</strong> 
+                    that new engineers can understand, <strong>comprehensive documentation</strong> that actually helps, 
+                    and <strong>sustainable practices</strong> that don't burn out teams.
+                </p>
+                <p>
+                    Technical debt is tracked and managed, not ignored. Code reviews are thorough, 
+                    not ceremonial. Knowledge is shared, not hoarded. The system's health metrics 
+                    include team velocity and bug rates, not just uptime percentages.
+                </p>
+                <p>
+                    The best compliment I've received: "The system runs so smoothly we forget you built it." 
+                    That's the goal—<strong>infrastructure that becomes invisible</strong> because it just works.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div>Systems engineered for the long term · No shortcuts · Just reliability</div>
+        <div class="footer-links">
+            <a href="systems.html" class="footer-link">Explore Architecture →</a>
+            <a href="contact.html" class="footer-link">Discuss Engineering →</a>
+        </div>
+    </footer>
+
+    <script>
+        // Animation on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.philosophy-section, .principle-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                observer.observe(section);
+            });
+            
+            // Navigation active state
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                const linkPage = link.getAttribute('href');
+                if (linkPage === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+            
+            // Tech stack hover effect
+            const techItems = document.querySelectorAll('.tech-item');
+            techItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.color = 'var(--accent-cyan)';
+                    this.style.transform = 'translateX(5px)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.color = '';
+                    this.style.transform = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
