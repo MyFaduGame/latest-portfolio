@@ -441,7 +441,7 @@
 <body>
     <!-- Navigation -->
     <nav class="nav-container">
-        <a href="index.html" class="nav-logo">SYSTEMS_ENGINEER</a>
+        <a href="index.html" class="nav-logo">MyFaduGame</a>
         <div class="nav-links">
             <a href="index.html" class="nav-link">HOME</a>
             <a href="work.html" class="nav-link">WORK</a>
@@ -694,7 +694,7 @@
 
             // Camera setup
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(40, 30, 40);
+            camera.position.set(50, 40, 30);
 
             // Renderer setup
             renderer = new THREE.WebGLRenderer({ 
@@ -713,8 +713,8 @@
             controls.dampingFactor = 0.05;
             controls.rotateSpeed = 0.5;
             controls.maxPolarAngle = Math.PI * 0.8;
-            controls.minDistance = 20;
-            controls.maxDistance = 100;
+            controls.minDistance = 30;
+            controls.maxDistance = 150;
 
             // Lighting
             const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
@@ -744,36 +744,48 @@
 
         function createSystemComponents() {
             const componentTypes = [
-                { name: 'API Gateway', color: 0x00d4ff, position: new THREE.Vector3(0, 5, 0), size: 3 },
-                { name: 'Auth Service', color: 0xffb74d, position: new THREE.Vector3(-8, 3, -5), size: 2 },
-                { name: 'Backend Services', color: 0x00ff9d, position: new THREE.Vector3(0, 0, 0), size: 4 },
-                { name: 'Message Queue', color: 0x9c27b0, position: new THREE.Vector3(10, 2, -8), size: 2.5 },
-                { name: 'Cache', color: 0xf44336, position: new THREE.Vector3(-10, 1, 10), size: 2.5 },
-                { name: 'Database', color: 0x4caf50, position: new THREE.Vector3(15, 0, 15), size: 3.5 },
-                { name: 'Monitoring', color: 0x2196f3, position: new THREE.Vector3(-15, 4, -15), size: 2 },
-                { name: 'CI/CD', color: 0xff9800, position: new THREE.Vector3(20, 6, -20), size: 2 },
-                { name: 'Cloud', color: 0x3f51b5, position: new THREE.Vector3(0, 10, 0), size: 5 }
+                { name: 'API Gateway', color: 0x00d4ff, position: new THREE.Vector3(-20, 0, 0), size: 3, shape: 'box' },
+                { name: 'Auth Service', color: 0xffb74d, position: new THREE.Vector3(-10, 5, -8), size: 2.5, shape: 'cylinder' },
+                { name: 'Backend Services', color: 0x00ff9d, position: new THREE.Vector3(0, 0, 0), size: 2.5, shape: 'icosahedron' },
+                { name: 'Message Queue', color: 0x9c27b0, position: new THREE.Vector3(15, 3, -10), size: 3, shape: 'box' },
+                { name: 'Cache', color: 0xf44336, position: new THREE.Vector3(-30, 2, 12), size: 2, shape: 'sphere' },
+                { name: 'Database', color: 0x4caf50, position: new THREE.Vector3(20, -5, 20), size: 2, shape: 'cylinder' },
+                { name: 'Monitoring', color: 0x2196f3, position: new THREE.Vector3(-20, 8, -15), size: 2.5, shape: 'box' },
+                { name: 'CI/CD', color: 0xff9800, position: new THREE.Vector3(25, 6, -25), size: 3, shape: 'box' },
+                { name: 'Cloud', color: 0x3f51b5, position: new THREE.Vector3(0, 15, 10), size: 1.5, shape: 'octahedron' }
             ];
 
             componentTypes.forEach((comp, index) => {
-                // Create geometry based on component type
+                // Create different geometries for different components
                 let geometry;
-                if (comp.name === 'Backend Services') {
-                    geometry = new THREE.IcosahedronGeometry(comp.size, 1);
-                } else if (comp.name === 'Database') {
-                    geometry = new THREE.CylinderGeometry(comp.size, comp.size, comp.size * 2, 16);
-                } else if (comp.name === 'Cloud') {
-                    geometry = new THREE.OctahedronGeometry(comp.size, 0);
-                } else {
-                    geometry = new THREE.BoxGeometry(comp.size, comp.size, comp.size);
+                switch(comp.shape) {
+                    case 'box':
+                        geometry = new THREE.BoxGeometry(comp.size, comp.size, comp.size);
+                        break;
+                    case 'sphere':
+                        geometry = new THREE.SphereGeometry(comp.size, 16, 16);
+                        break;
+                    case 'cylinder':
+                        geometry = new THREE.CylinderGeometry(comp.size * 0.8, comp.size * 0.8, comp.size * 1.5, 16);
+                        break;
+                    case 'icosahedron':
+                        geometry = new THREE.IcosahedronGeometry(comp.size, 1);
+                        break;
+                    case 'octahedron':
+                        geometry = new THREE.OctahedronGeometry(comp.size, 0);
+                        break;
+                    default:
+                        geometry = new THREE.BoxGeometry(comp.size, comp.size, comp.size);
                 }
 
                 const material = new THREE.MeshStandardMaterial({ 
                     color: comp.color,
                     emissive: comp.color,
-                    emissiveIntensity: 0.1,
-                    metalness: 0.7,
-                    roughness: 0.2
+                    emissiveIntensity: 0.15,
+                    metalness: 0.6,
+                    roughness: 0.3,
+                    transparent: true,
+                    opacity: 0.9
                 });
 
                 const mesh = new THREE.Mesh(geometry, material);
@@ -786,28 +798,104 @@
                     index: index
                 };
 
+                // Add wireframe for better visibility
+                const wireframe = new THREE.LineSegments(
+                    new THREE.EdgesGeometry(geometry),
+                    new THREE.LineBasicMaterial({ 
+                        color: 0xffffff,
+                        transparent: true,
+                        opacity: 0.3
+                    })
+                );
+                mesh.add(wireframe);
+
                 // Add pulsing animation
                 mesh.originalScale = comp.size;
-                mesh.pulseSpeed = 0.5 + Math.random() * 0.5;
+                mesh.pulseSpeed = 0.3 + Math.random() * 0.4;
 
                 scene.add(mesh);
                 objects.push(mesh);
 
-                // Add label
-                addLabel(mesh, comp.name);
+                // Add label with better positioning
+                addLabel(mesh, comp.name, comp.size);
             });
         }
 
-        function addLabel(mesh, text) {
+        // function createSystemComponents() {
+        //     const componentTypes = [
+        //         { name: 'API Gateway', color: 0x00d4ff, position: new THREE.Vector3(0, 5, 0), size: 3 },
+        //         { name: 'Auth Service', color: 0xffb74d, position: new THREE.Vector3(-8, 3, -5), size: 2 },
+        //         { name: 'Backend Services', color: 0x00ff9d, position: new THREE.Vector3(0, 0, 0), size: 4 },
+        //         { name: 'Message Queue', color: 0x9c27b0, position: new THREE.Vector3(10, 2, -8), size: 2.5 },
+        //         { name: 'Cache', color: 0xf44336, position: new THREE.Vector3(-10, 1, 10), size: 2.5 },
+        //         { name: 'Database', color: 0x4caf50, position: new THREE.Vector3(15, 0, 15), size: 3.5 },
+        //         { name: 'Monitoring', color: 0x2196f3, position: new THREE.Vector3(-15, 4, -15), size: 2 },
+        //         { name: 'CI/CD', color: 0xff9800, position: new THREE.Vector3(20, 6, -20), size: 2 },
+        //         { name: 'Cloud', color: 0x3f51b5, position: new THREE.Vector3(0, 10, 0), size: 5 }
+        //     ];
+
+        //     componentTypes.forEach((comp, index) => {
+        //         // Create geometry based on component type
+        //         let geometry;
+        //         if (comp.name === 'Backend Services') {
+        //             geometry = new THREE.IcosahedronGeometry(comp.size, 1);
+        //         } else if (comp.name === 'Database') {
+        //             geometry = new THREE.CylinderGeometry(comp.size, comp.size, comp.size * 2, 16);
+        //         } else if (comp.name === 'Cloud') {
+        //             geometry = new THREE.OctahedronGeometry(comp.size, 0);
+        //         } else {
+        //             geometry = new THREE.BoxGeometry(comp.size, comp.size, comp.size);
+        //         }
+
+        //         const material = new THREE.MeshStandardMaterial({ 
+        //             color: comp.color,
+        //             emissive: comp.color,
+        //             emissiveIntensity: 0.1,
+        //             metalness: 0.7,
+        //             roughness: 0.2
+        //         });
+
+        //         const mesh = new THREE.Mesh(geometry, material);
+        //         mesh.position.copy(comp.position);
+        //         mesh.castShadow = true;
+        //         mesh.receiveShadow = true;
+        //         mesh.userData = { 
+        //             type: comp.name.toLowerCase().replace(' ', '-'),
+        //             name: comp.name,
+        //             index: index
+        //         };
+
+        //         // Add pulsing animation
+        //         mesh.originalScale = comp.size;
+        //         mesh.pulseSpeed = 0.5 + Math.random() * 0.5;
+
+        //         scene.add(mesh);
+        //         objects.push(mesh);
+
+        //         // Add label
+        //         addLabel(mesh, comp.name);
+        //     });
+        // }
+
+        function addLabel(mesh, text, size) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             canvas.width = 256;
-            canvas.height = 128;
+            canvas.height = 64;
             
-            context.fillStyle = 'rgba(10, 10, 10, 0.8)';
+            // Clear canvas
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw subtle background
+            context.fillStyle = 'rgba(10, 10, 10, 0.7)';
             context.fillRect(0, 0, canvas.width, canvas.height);
             
-            context.font = 'bold 24px JetBrains Mono';
+            // Draw border
+            context.strokeStyle = 'rgba(0, 212, 255, 0.5)';
+            context.lineWidth = 2;
+            context.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+            
+            context.font = 'bold 20px JetBrains Mono';
             context.fillStyle = '#ffffff';
             context.textAlign = 'center';
             context.textBaseline = 'middle';
@@ -816,48 +904,89 @@
             const texture = new THREE.CanvasTexture(canvas);
             const spriteMaterial = new THREE.SpriteMaterial({ 
                 map: texture,
-                transparent: true
+                transparent: true,
+                opacity: 0.9
             });
             
             const sprite = new THREE.Sprite(spriteMaterial);
-            sprite.scale.set(10, 5, 1);
+            sprite.scale.set(8, 2, 1);
             sprite.position.copy(mesh.position);
-            sprite.position.y += mesh.geometry.parameters.height + 2;
+            sprite.position.y += size + 3; // Position above the component
             
             scene.add(sprite);
         }
 
+        // function addLabel(mesh, text) {
+        //     const canvas = document.createElement('canvas');
+        //     const context = canvas.getContext('2d');
+        //     canvas.width = 256;
+        //     canvas.height = 128;
+            
+        //     context.fillStyle = 'rgba(10, 10, 10, 0.8)';
+        //     context.fillRect(0, 0, canvas.width, canvas.height);
+            
+        //     context.font = 'bold 24px JetBrains Mono';
+        //     context.fillStyle = '#ffffff';
+        //     context.textAlign = 'center';
+        //     context.textBaseline = 'middle';
+        //     context.fillText(text, canvas.width / 2, canvas.height / 2);
+            
+        //     const texture = new THREE.CanvasTexture(canvas);
+        //     const spriteMaterial = new THREE.SpriteMaterial({ 
+        //         map: texture,
+        //         transparent: true
+        //     });
+            
+        //     const sprite = new THREE.Sprite(spriteMaterial);
+        //     sprite.scale.set(10, 5, 1);
+        //     sprite.position.copy(mesh.position);
+        //     sprite.position.y += mesh.geometry.parameters.height + 2;
+            
+        //     scene.add(sprite);
+        // }
+
         function createDataFlows() {
-            // Create connection lines between components
+            // Create only essential connections
             const connections = [
-                [0, 2], // API -> Backend Services
-                [1, 2], // Auth -> Backend Services
+                [0, 2], // API Gateway -> Backend Services (primary)
+                [1, 2], // Auth Service -> Backend Services
                 [2, 3], // Backend Services -> Message Queue
                 [2, 4], // Backend Services -> Cache
                 [2, 5], // Backend Services -> Database
-                [2, 6], // Backend Services -> Monitoring
-                [7, 2], // CI/CD -> Backend Services
-                [8, 0]  // Cloud -> API Gateway
+                [6, 2], // Monitoring -> Backend Services (monitoring connection)
+                [8, 0]  // Cloud -> API Gateway (infrastructure)
             ];
 
             connections.forEach(([from, to]) => {
-                const points = [];
-                const start = objects[from].position;
-                const end = objects[to].position;
+                const start = objects[from].position.clone();
+                const end = objects[to].position.clone();
                 
-                // Create curved path
+                // Offset start and end points to avoid overlapping with components
+                const direction = new THREE.Vector3().subVectors(end, start).normalize();
+                start.add(direction.clone().multiplyScalar(objects[from].originalScale * 0.7));
+                end.sub(direction.clone().multiplyScalar(objects[to].originalScale * 0.7));
+                
+                // Create curved path with more height variation
+                const points = [];
                 points.push(start);
-                const mid = new THREE.Vector3().lerpVectors(start, end, 0.5);
-                mid.y += 5 + Math.random() * 3;
-                points.push(mid);
+                
+                const mid1 = new THREE.Vector3().lerpVectors(start, end, 0.33);
+                const mid2 = new THREE.Vector3().lerpVectors(start, end, 0.66);
+                
+                // Add vertical variation
+                mid1.y += 3 + Math.random() * 4;
+                mid2.y += 2 + Math.random() * 3;
+                
+                points.push(mid1);
+                points.push(mid2);
                 points.push(end);
                 
                 const curve = new THREE.CatmullRomCurve3(points);
-                const geometry = new THREE.TubeGeometry(curve, 20, 0.3, 8, false);
+                const geometry = new THREE.TubeGeometry(curve, 20, 0.2, 8, false);
                 const material = new THREE.MeshBasicMaterial({ 
                     color: 0x00d4ff,
                     transparent: true,
-                    opacity: 0.3
+                    opacity: 0.4
                 });
                 
                 const flow = new THREE.Mesh(geometry, material);
@@ -866,10 +995,54 @@
                     mesh: flow,
                     curve: curve,
                     progress: Math.random(),
-                    speed: 0.002 + Math.random() * 0.003
+                    speed: 0.001 + Math.random() * 0.002
                 });
             });
         }
+
+        // function createDataFlows() {
+        //     // Create connection lines between components
+        //     const connections = [
+        //         [0, 2], // API -> Backend Services
+        //         [1, 2], // Auth -> Backend Services
+        //         [2, 3], // Backend Services -> Message Queue
+        //         [2, 4], // Backend Services -> Cache
+        //         [2, 5], // Backend Services -> Database
+        //         [2, 6], // Backend Services -> Monitoring
+        //         [7, 2], // CI/CD -> Backend Services
+        //         [8, 0]  // Cloud -> API Gateway
+        //     ];
+
+        //     connections.forEach(([from, to]) => {
+        //         const points = [];
+        //         const start = objects[from].position;
+        //         const end = objects[to].position;
+                
+        //         // Create curved path
+        //         points.push(start);
+        //         const mid = new THREE.Vector3().lerpVectors(start, end, 0.5);
+        //         mid.y += 5 + Math.random() * 3;
+        //         points.push(mid);
+        //         points.push(end);
+                
+        //         const curve = new THREE.CatmullRomCurve3(points);
+        //         const geometry = new THREE.TubeGeometry(curve, 20, 0.3, 8, false);
+        //         const material = new THREE.MeshBasicMaterial({ 
+        //             color: 0x00d4ff,
+        //             transparent: true,
+        //             opacity: 0.3
+        //         });
+                
+        //         const flow = new THREE.Mesh(geometry, material);
+        //         scene.add(flow);
+        //         dataFlows.push({
+        //             mesh: flow,
+        //             curve: curve,
+        //             progress: Math.random(),
+        //             speed: 0.002 + Math.random() * 0.003
+        //         });
+        //     });
+        // }
 
         function onWindowResize() {
             camera.aspect = document.querySelector('.canvas-container').offsetWidth / 
